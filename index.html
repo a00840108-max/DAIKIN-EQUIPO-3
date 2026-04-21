@@ -1,179 +1,890 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daikin — Inteligencia de Mercado Argentina</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans)}
-.frente-btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .15s}
-.frente-btn.active{color:#fff}
-.frente-btn:hover{background:var(--color-background-secondary)}
-.frente-btn[data-id="0"].active{background:#185FA5;border-color:#185FA5;color:#fff}
-.frente-btn[data-id="1"].active{background:#1D9E75;border-color:#1D9E75;color:#fff}
-.frente-btn[data-id="2"].active{background:#854F0B;border-color:#854F0B;color:#fff}
-.frente-btn[data-id="3"].active{background:#534AB7;border-color:#534AB7;color:#fff}
-.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.dim-label{width:150px;font-size:12px;color:var(--color-text-secondary);flex-shrink:0;text-align:right}
-.bar-track{flex:1;height:12px;background:var(--color-background-secondary);border-radius:6px;overflow:hidden}
-.bar-fill{height:100%;border-radius:6px;transition:width .4s ease}
-.bar-pct{width:32px;text-align:right;font-size:12px;font-weight:500;flex-shrink:0}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:1rem}
-.stat-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px}
-.stat-n{font-size:18px;font-weight:500;color:var(--color-text-primary)}
-.stat-l{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;line-height:1.3}
-.insight-box{border-left:3px solid #ccc;padding:10px 14px;margin-top:1rem;transition:border-color .3s}
-.insight-box p{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
-.score-row{display:flex;gap:6px;margin-top:1rem;align-items:center;flex-wrap:wrap}
-.score-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;border:2px solid transparent;flex-shrink:0}
-.matrix-row{display:flex;gap:4px;margin-bottom:4px;align-items:center}
-.matrix-label{width:120px;font-size:11px;color:var(--color-text-secondary);text-align:right;flex-shrink:0}
-.matrix-cell{flex:1;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-.cell-high{background:#E1F5EE;color:#085041}
-.cell-mid{background:#FAEEDA;color:#633806}
-.cell-low{background:#FCEBEB;color:#791F1F}
-.cell-na{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
-.frente-header{font-size:18px;font-weight:500;color:var(--color-text-primary);transition:color .3s}
-.frente-sub{font-size:12px;color:var(--color-text-tertiary);margin-top:2px;margin-bottom:1rem}
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: rgba(255,255,255,0.06);
+    --accent1: #00e5ff;
+    --accent2: #ff4d6d;
+    --accent3: #c8ff57;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 32px 80px;
+  }
+
+  /* ── HEADER ── */
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s forwards;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    color: #fff;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+
+  h1 span {
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    color: transparent;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s forwards;
+  }
+
+  .badge {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+  }
+
+  .badge.live { border-color: var(--accent3); color: var(--accent3); }
+
+  /* ── TABS ── */
+  .tabs-nav {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.6s 0.45s forwards;
+  }
+
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent1);
+    transform: scaleX(0);
+    transition: transform 0.25s;
+  }
+
+  .tab-btn.active { color: #fff; }
+  .tab-btn.active::after { transform: scaleX(1); }
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* ── PRICE RACE ── */
+  .price-race { margin-bottom: 72px; }
+
+  .race-item {
+    display: grid;
+    grid-template-columns: 90px 1fr 140px;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 4px;
+  }
+
+  .race-item:hover { background: rgba(255,255,255,0.025); }
+
+  .race-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: #fff;
+    padding-left: 8px;
+  }
+
+  .race-bar-wrap { position: relative; height: 8px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; }
+
+  .race-bar {
+    height: 100%;
+    border-radius: 99px;
+    position: relative;
+    transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .race-bar::after {
+    content: '';
+    position: absolute; right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: inherit;
+    box-shadow: 0 0 12px currentColor;
+  }
+
+  .race-price {
+    font-size: 13px;
+    font-weight: 500;
+    text-align: right;
+    padding-right: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2px;
+    margin-bottom: 72px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    z-index: 2;
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .card-rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    line-height: 1;
+    position: absolute;
+    top: 16px; right: 20px;
+    opacity: 0.04;
+    color: #fff;
+    pointer-events: none;
+  }
+
+  .card-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.04em;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .card-product {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    max-width: 260px;
+  }
+
+  .card-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .currency { font-size: 13px; color: var(--muted); }
+
+  .card-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 0.02em;
+  }
+
+  .divider { height: 1px; background: var(--border); margin-bottom: 16px; }
+
+  .diff-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .diff-text {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .tag {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+    border: 1px solid;
+    font-weight: 500;
+  }
+
+  /* ── POSITIONING MAP ── */
+  .positioning { margin-bottom: 72px; }
+
+  .pos-grid {
+    position: relative;
+    height: 420px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .pos-grid::before, .pos-grid::after {
+    content: '';
+    position: absolute;
+    background: var(--border);
+  }
+
+  .pos-grid::before { top: 50%; left: 0; right: 0; height: 1px; }
+  .pos-grid::after  { left: 50%; top: 0; bottom: 0; width: 1px; }
+
+  .axis-label {
+    position: absolute;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .ax-top    { top: 12px; left: 50%; transform: translateX(-50%); }
+  .ax-bottom { bottom: 12px; left: 50%; transform: translateX(-50%); }
+  .ax-left   { left: 14px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+  .ax-right  { right: 14px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+  .dot {
+    position: absolute;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: #fff;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(255,255,255,0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+  }
+
+  .dot:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 30px currentColor;
+    z-index: 10;
+  }
+
+  .dot-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a28;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .dot:hover .dot-tooltip { opacity: 1; }
+
+  /* ── INSIGHTS STRIP ── */
+  .insights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+
+  .insight-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .insight-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .insight-body {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* ── TAB 2: FRENTES ── */
+  .frente-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .frente-btn {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--muted);
+    transition: all .2s;
+    letter-spacing: 0.04em;
+  }
+
+  .frente-btn:hover { background: var(--surface2); color: var(--text); }
+
+  .frente-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    margin-bottom: 6px;
+    transition: color 0.3s;
+  }
+
+  .frente-sub-text {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 36px;
+  }
+
+  .frente-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .dim-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .dim-label {
+    width: 160px;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .bar-pct {
+    width: 36px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 14px;
+  }
+
+  .stat-n {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .stat-l {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .frente-insight {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 40px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .frente-insight p {
+    font-size: 13px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── MATRIX ── */
+  .matrix-wrap { margin-top: 8px; }
+
+  .matrix-header {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+    padding-left: 136px;
+  }
+
+  .matrix-col-label {
+    flex: 1;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 0;
+  }
+
+  .matrix-row-el {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+    align-items: center;
+  }
+
+  .matrix-row-label {
+    width: 132px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    flex-shrink: 0;
+    padding-right: 4px;
+  }
+
+  .matrix-cell {
+    flex: 1;
+    height: 30px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: outline 0.2s;
+  }
+
+  .cell-high { background: rgba(0,229,255,0.12); color: #00e5ff; }
+  .cell-mid  { background: rgba(255,159,67,0.12); color: #ff9f43; }
+  .cell-low  { background: rgba(255,77,109,0.12); color: #ff4d6d; }
+
+  .legend-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-chip {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+
+  /* animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .anim { opacity: 0; animation: fadeUp 0.6s forwards; }
+
+  @media (max-width: 700px) {
+    .frente-body { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .insights { grid-template-columns: 1fr; }
+    .race-item { grid-template-columns: 70px 1fr 110px; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .matrix-header { padding-left: 90px; }
+    .matrix-row-label { width: 86px; }
+  }
 </style>
+</head>
+<body>
+<div class="wrap">
 
-<h2 class="sr-only">Comparativo interactivo de los 4 frentes estratégicos para Daikin en Argentina</h2>
-
-<div style="padding:.5rem 0 1rem">
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem" id="btn-row">
-    <button class="frente-btn active" data-id="0">Mid-market residencial</button>
-    <button class="frente-btn" data-id="1">Sector vitivinícola</button>
-    <button class="frente-btn" data-id="2">Retrofit</button>
-    <button class="frente-btn" data-id="3">HVAC como servicio</button>
-  </div>
-
-  <div id="frente-header" class="frente-header">Mid-market residencial</div>
-  <div id="frente-sub" class="frente-sub">Segmento de mayor volumen del país — clase media con necesidad de climatización</div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
-    <div>
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Evaluación por dimensión</div>
-      <div id="dims"></div>
+  <!-- HEADER -->
+  <header>
+    <div class="eyebrow">Daikin Argentina · Inteligencia de Mercado 2025</div>
+    <h1>ANÁLISIS<br><span>ESTRATÉGICO</span></h1>
+    <div class="meta-row">
+      <span class="badge live">● HVAC Residencial</span>
+      <span class="badge">Mini Split Inverter</span>
+      <span class="badge">ARS · 6 competidores</span>
+      <span class="badge">4 Frentes estratégicos</span>
     </div>
-    <div>
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Datos clave del frente</div>
-      <div id="stats" class="stat-grid"></div>
-    </div>
-  </div>
+  </header>
 
-  <div id="insight" class="insight-box">
-    <p id="insight-text"></p>
-  </div>
+  <!-- TABS NAV -->
+  <nav class="tabs-nav" aria-label="Secciones">
+    <button class="tab-btn active" data-tab="competencias">01 — Competencias de mercado</button>
+    <button class="tab-btn" data-tab="frentes">02 — Frentes estratégicos</button>
+  </nav>
 
-  <div style="margin-top:1.5rem">
-    <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Matriz comparativa — los 4 frentes</div>
-    <div class="matrix-row">
-      <div class="matrix-label"></div>
-      <div style="flex:1;display:flex;gap:4px">
-        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">Mid-market</div>
-        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">Vitivinícola</div>
-        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">Retrofit</div>
-        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">HVACaaS</div>
+  <!-- ═══════════════════════════════════════════
+       TAB 1: COMPETENCIAS DE MERCADO
+  ═══════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-competencias">
+
+    <div class="section-label anim" style="animation-delay:0.05s">// Comparativa de precios</div>
+    <div class="price-race anim" id="priceRace" style="animation-delay:0.1s"></div>
+
+    <div class="section-label anim" style="animation-delay:0.15s">// Fichas de producto</div>
+    <div class="cards-grid" id="cardsGrid"></div>
+
+    <div class="section-label anim" style="animation-delay:0.2s">// Mapa de posicionamiento · Precio vs. Diferenciación</div>
+    <div class="positioning anim" style="animation-delay:0.25s">
+      <div class="pos-grid" id="posGrid">
+        <span class="axis-label ax-top">Alta diferenciación</span>
+        <span class="axis-label ax-bottom">Diferenciación básica</span>
+        <span class="axis-label ax-left">Económico</span>
+        <span class="axis-label ax-right">Premium</span>
       </div>
     </div>
-    <div id="matrix"></div>
+
+    <div class="section-label anim" style="animation-delay:0.3s">// Hallazgos clave</div>
+    <div class="insights anim" style="animation-delay:0.35s">
+      <div class="insight">
+        <div class="insight-num" style="color:var(--accent1)">47%</div>
+        <div class="insight-label">Spread de precio</div>
+        <div class="insight-body">Desde $879K (Carrier) hasta $1.29M (LG): brecha del 47% en el segmento, lo que presiona el posicionamiento por valor.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:var(--accent3)">2</div>
+        <div class="insight-label">Marcas premium de diseño</div>
+        <div class="insight-body">LG y Samsung apuestan por estética y ecosistema smart por encima de $1.2M con propuestas de lifestyle diferenciadas.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-num" style="color:var(--accent2)">3</div>
+        <div class="insight-label">Jugadores de valor</div>
+        <div class="insight-body">Carrier, Hisense y Midea compiten bajo $1.1M. Hisense es el más agresivo en precio; Carrier lo supera en respaldo técnico.</div>
+      </div>
+    </div>
+
   </div>
 
-  <div style="margin-top:1rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <span style="font-size:11px;color:var(--color-text-tertiary)">Leyenda:</span>
-    <span style="font-size:11px;background:#E1F5EE;color:#085041;padding:2px 8px;border-radius:4px">Alto</span>
-    <span style="font-size:11px;background:#FAEEDA;color:#633806;padding:2px 8px;border-radius:4px">Medio</span>
-    <span style="font-size:11px;background:#FCEBEB;color:#791F1F;padding:2px 8px;border-radius:4px">Bajo</span>
+  <!-- ═══════════════════════════════════════════
+       TAB 2: FRENTES ESTRATÉGICOS
+  ═══════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-frentes">
+
+    <div class="section-label" style="margin-bottom:16px">// Seleccionar frente estratégico</div>
+    <div class="frente-tabs" id="frenteTabs"></div>
+
+    <div class="frente-title" id="frenteTitle"></div>
+    <div class="frente-sub-text" id="frenteSub"></div>
+
+    <div class="frente-body">
+      <div>
+        <div class="section-label" style="margin-bottom:16px">// Evaluación por dimensión</div>
+        <div id="frenteDims"></div>
+      </div>
+      <div>
+        <div class="section-label" style="margin-bottom:16px">// Datos clave del frente</div>
+        <div class="stat-grid" id="frenteStats"></div>
+      </div>
+    </div>
+
+    <div class="frente-insight" id="frenteInsight">
+      <div class="diff-label" style="margin-bottom:8px">Análisis ejecutivo</div>
+      <p id="frenteInsightText"></p>
+    </div>
+
+    <div class="section-label" style="margin-bottom:16px">// Matriz comparativa — los 4 frentes</div>
+    <div class="matrix-wrap" id="matrixWrap">
+      <div class="matrix-header" id="matrixHeader"></div>
+      <div id="matrixBody"></div>
+    </div>
+
+    <div class="legend-row">
+      <span style="font-size:11px;color:var(--muted)">Leyenda:</span>
+      <span class="legend-chip cell-high">Alto</span>
+      <span class="legend-chip cell-mid">Medio</span>
+      <span class="legend-chip cell-low">Bajo</span>
+    </div>
+
   </div>
 
-</div>
+</div><!-- /wrap -->
 
 <script>
+/* ═══════════════════════════ TAB SWITCHER ═══════════════════════════ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+    if (id === 'competencias') animateBars();
+  });
+});
+
+/* ═══════════════════════════ TAB 1 DATA ═══════════════════════════ */
+const brands = [
+  { brand:"Daikin",   product:"Mini Split Inverter Frío/Calor 3500W FTXN35JXV1G",         price:1038761, diff:"Máxima eficiencia energética + compresor Swing + integración AC y calefacción", tagCategory:"Tecnología",     color:"#00e5ff", posX:72, posY:35, rank:3 },
+  { brand:"LG",       product:"Inverter Artcool 3000 Frigorías Color Negro",                price:1291873, diff:"Experiencia de usuario + diseño premium + ecosistema ThinQ (smart home)",      tagCategory:"Lifestyle",      color:"#c8ff57", posX:88, posY:22, rank:1 },
+  { brand:"Samsung",  product:"Digital Inverter 2780 AR12ASHQAWK Color Blanco",             price:1220099, diff:"Confort sin corriente de aire (WindFree) + enfoque en experiencia sensorial",   tagCategory:"Experiencia",    color:"#ff9f43", posX:80, posY:30, rank:2 },
+  { brand:"Carrier",  product:"XPower Inverter Smart 53HVG0901F Blanco",                    price:879999,  diff:"Confiabilidad industrial + respaldo técnico + solución multisplit multiespacio", tagCategory:"Servicio",       color:"#a29bfe", posX:30, posY:40, rank:5 },
+  { brand:"Midea",    product:"Inverter Frío/Calor BreezlessE MSCBIC-12H-N80F",             price:1200000, diff:"Precio accesible + conectividad WiFi + mejor relación costo-beneficio",         tagCategory:"Costo-beneficio",color:"#fd79a8", posX:58, posY:55, rank:4 },
+  { brand:"Hisense",  product:"Inverter White 3500W AS12UR4SVRCD02N",                       price:1010057, diff:"Precio de entrada más bajo del segmento + conectividad WiFi incluida",          tagCategory:"Precio",         color:"#ff4d6d", posX:20, posY:68, rank:6 },
+];
+
+const maxPrice = Math.max(...brands.map(b=>b.price));
+const minPrice = Math.min(...brands.map(b=>b.price));
+
+/* Price race */
+const raceEl = document.getElementById('priceRace');
+[...brands].sort((a,b)=>b.price-a.price).forEach(b => {
+  const pct = ((b.price - minPrice)/(maxPrice - minPrice))*60+20;
+  const row = document.createElement('div');
+  row.className = 'race-item';
+  row.innerHTML = `
+    <div class="race-brand">${b.brand}</div>
+    <div class="race-bar-wrap"><div class="race-bar" style="width:0;background:${b.color}" data-w="${pct}%"></div></div>
+    <div class="race-price" style="color:${b.color}">$${b.price.toLocaleString('es-AR')}</div>
+  `;
+  raceEl.appendChild(row);
+});
+
+function animateBars() {
+  setTimeout(() => {
+    document.querySelectorAll('.race-bar').forEach(bar => { bar.style.width = bar.dataset.w; });
+  }, 100);
+}
+animateBars();
+
+/* Cards */
+const grid = document.getElementById('cardsGrid');
+brands.forEach((b, i) => {
+  const card = document.createElement('div');
+  card.className = 'card anim';
+  card.style.animationDelay = `${0.15 + i * 0.07}s`;
+  card.innerHTML = `
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${b.color}"></div>
+    <div class="card-rank">${String(b.rank).padStart(2,'0')}</div>
+    <div class="card-brand">${b.brand}</div>
+    <div class="card-product">${b.product}</div>
+    <div class="card-price-row">
+      <span class="currency">ARS</span>
+      <span class="card-price" style="color:${b.color}">$${b.price.toLocaleString('es-AR')}</span>
+    </div>
+    <div class="divider"></div>
+    <div class="diff-label">Diferenciador clave</div>
+    <div class="diff-text">${b.diff}</div>
+    <span class="tag" style="color:${b.color};border-color:${b.color}33;background:${b.color}11">${b.tagCategory}</span>
+  `;
+  grid.appendChild(card);
+});
+
+/* Positioning map */
+const posGrid = document.getElementById('posGrid');
+brands.forEach(b => {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  dot.style.cssText = `left:${b.posX}%;top:${b.posY}%;background:${b.color}22;border-color:${b.color}66;color:${b.color};text-shadow:0 0 8px ${b.color};box-shadow:0 0 20px ${b.color}33;`;
+  dot.innerHTML = `${b.brand.substring(0,3).toUpperCase()}<div class="dot-tooltip">${b.brand} · $${b.price.toLocaleString('es-AR')}</div>`;
+  posGrid.appendChild(dot);
+});
+
+/* ═══════════════════════════ TAB 2 DATA ═══════════════════════════ */
 const frentes = [
   {
-    id: 0,
-    name: "Mid-market residencial",
-    sub: "Segmento de mayor volumen del país — clase media con necesidad de climatización",
-    color: "#185FA5",
-    colorLight: "#E6F1FB",
-    dims: [
-      {label:"Tamaño de mercado", val:90},
+    id:0, name:"Mid-market residencial",
+    sub:"Segmento de mayor volumen del país — clase media con necesidad de climatización",
+    color:"#185FA5",
+    dims:[
+      {label:"Tamaño de mercado",    val:90},
       {label:"Facilidad de entrada", val:55},
-      {label:"Margen potencial", val:45},
-      {label:"Sensibilidad al precio", val:20},
-      {label:"Diferenciación Daikin", val:40},
+      {label:"Margen potencial",     val:45},
+      {label:"Sensibilidad al precio",val:20},
+      {label:"Diferenciación Daikin",val:40},
       {label:"Urgencia del cliente", val:70},
     ],
-    stats: [
-      {n:"~46M", l:"Población potencial"},
-      {n:"$1.8–2.5B", l:"TAM climatización AR"},
-      {n:"Alta", l:"Competencia local/china"},
+    stats:[
+      {n:"~46M",    l:"Población potencial"},
+      {n:"$1.8–2.5B",l:"TAM climatización AR"},
+      {n:"Alta",    l:"Competencia local/china"},
     ],
-    insight: "Mayor volumen absoluto del país. Pero Daikin compite arriba en precio — pierde volumen frente a marcas chinas y locales. Requiere líneas value-engineered para entrar. Margen bajo, volumen alto.",
-    matrix: ["high","mid","mid","low"]
+    insight:"Mayor volumen absoluto del país. Pero Daikin compite arriba en precio — pierde volumen frente a marcas chinas y locales. Requiere líneas value-engineered para entrar. Margen bajo, volumen alto.",
+    matrix:["high","mid","mid","low"]
   },
   {
-    id: 1,
-    name: "Sector vitivinícola",
-    sub: "Nicho de alta precisión técnica — 874 bodegas activas en Argentina",
-    color: "#1D9E75",
-    colorLight: "#E1F5EE",
-    dims: [
-      {label:"Tamaño de mercado", val:40},
+    id:1, name:"Sector vitivinícola",
+    sub:"Nicho de alta precisión técnica — 874 bodegas activas en Argentina",
+    color:"#1D9E75",
+    dims:[
+      {label:"Tamaño de mercado",    val:40},
       {label:"Facilidad de entrada", val:70},
-      {label:"Margen potencial", val:90},
-      {label:"Sensibilidad al precio", val:80},
-      {label:"Diferenciación Daikin", val:95},
+      {label:"Margen potencial",     val:90},
+      {label:"Sensibilidad al precio",val:80},
+      {label:"Diferenciación Daikin",val:95},
       {label:"Urgencia del cliente", val:90},
     ],
-    stats: [
-      {n:"874", l:"Bodegas activas (INV 2024)"},
-      {n:"$713M", l:"Exportaciones vino 2024"},
-      {n:"Zuccardi", l:"Caso real Daikin en AR"},
+    stats:[
+      {n:"874",     l:"Bodegas activas (INV 2024)"},
+      {n:"$713M",   l:"Exportaciones vino 2024"},
+      {n:"Zuccardi",l:"Caso real Daikin en AR"},
     ],
-    insight: "Nicho pequeño en volumen pero de alto valor. HVAC no es opcional — es requisito de calidad. Daikin tiene caso probado en Mendoza. Menos sensible al precio. Diferenciación máxima frente a competencia.",
-    matrix: ["low","high","mid","mid"]
+    insight:"Nicho pequeño en volumen pero de alto valor. HVAC no es opcional — es requisito de calidad. Daikin tiene caso probado en Mendoza. Menos sensible al precio. Diferenciación máxima frente a competencia.",
+    matrix:["low","high","mid","mid"]
   },
   {
-    id: 2,
-    name: "Retrofit",
-    sub: "Reemplazo de sistemas obsoletos — parque existente enorme y envejecido",
-    color: "#854F0B",
-    colorLight: "#FAEEDA",
-    dims: [
-      {label:"Tamaño de mercado", val:75},
+    id:2, name:"Retrofit",
+    sub:"Reemplazo de sistemas obsoletos — parque existente enorme y envejecido",
+    color:"#C07D2A",
+    dims:[
+      {label:"Tamaño de mercado",    val:75},
       {label:"Facilidad de entrada", val:60},
-      {label:"Margen potencial", val:65},
-      {label:"Sensibilidad al precio", val:45},
-      {label:"Diferenciación Daikin", val:70},
+      {label:"Margen potencial",     val:65},
+      {label:"Sensibilidad al precio",val:45},
+      {label:"Diferenciación Daikin",val:70},
       {label:"Urgencia del cliente", val:80},
     ],
-    stats: [
-      {n:"Alta", l:"Penetración equipos viejos"},
-      {n:"+159%", l:"Alza tarifa eléctrica feb 2024"},
-      {n:"Alta", l:"Motivación por ahorro"},
+    stats:[
+      {n:"Alta",   l:"Penetración equipos viejos"},
+      {n:"+159%",  l:"Alza tarifa eléctrica feb 2024"},
+      {n:"Alta",   l:"Motivación por ahorro"},
     ],
-    insight: "Mercado ya existente — no se necesita educar. La suba de tarifas eléctricas crea urgencia real para reemplazar equipos ineficientes. El principal problema es el costo inicial del reemplazo.",
-    matrix: ["mid","mid","high","mid"]
+    insight:"Mercado ya existente — no se necesita educar. La suba de tarifas eléctricas crea urgencia real para reemplazar equipos ineficientes. El principal problema es el costo inicial del reemplazo.",
+    matrix:["mid","mid","high","mid"]
   },
   {
-    id: 3,
-    name: "HVAC como servicio",
-    sub: "Modelo de suscripción mensual — elimina la barrera del costo inicial",
-    color: "#534AB7",
-    colorLight: "#EEEDFE",
-    dims: [
-      {label:"Tamaño de mercado", val:70},
+    id:3, name:"HVAC como servicio",
+    sub:"Modelo de suscripción mensual — elimina la barrera del costo inicial",
+    color:"#7B74E8",
+    dims:[
+      {label:"Tamaño de mercado",    val:70},
       {label:"Facilidad de entrada", val:40},
-      {label:"Margen potencial", val:75},
-      {label:"Sensibilidad al precio", val:85},
-      {label:"Diferenciación Daikin", val:85},
+      {label:"Margen potencial",     val:75},
+      {label:"Sensibilidad al precio",val:85},
+      {label:"Diferenciación Daikin",val:85},
       {label:"Urgencia del cliente", val:65},
     ],
-    stats: [
-      {n:"Alta", l:"Baja liquidez en Argentina"},
-      {n:"Global", l:"Tendencia 'everything-as-a-service'"},
-      {n:"Alto", l:"Riesgo de implementación"},
+    stats:[
+      {n:"Alta",   l:"Baja liquidez en Argentina"},
+      {n:"Global", l:"Tendencia everything-as-a-service"},
+      {n:"Alto",   l:"Riesgo de implementación"},
     ],
-    insight: "Modelo innovador que ataca la barrera principal: el costo inicial. Alta diferenciación vs. competencia. Pero requiere cambio de modelo de negocio en Daikin AR y mayor complejidad operativa.",
-    matrix: ["mid","mid","mid","high"]
+    insight:"Modelo innovador que ataca la barrera principal: el costo inicial. Alta diferenciación vs. competencia. Pero requiere cambio de modelo de negocio en Daikin AR y mayor complejidad operativa.",
+    matrix:["mid","mid","mid","high"]
   }
 ];
 
@@ -193,65 +904,81 @@ const matrixData = [
   ["mid","high","mid","low"],
 ];
 
-function cellClass(v){return v==="high"?"cell-high":v==="mid"?"cell-mid":"cell-low";}
-function cellLabel(v){return v==="high"?"Alto":v==="mid"?"Medio":"Bajo";}
+function cellClass(v){ return v==="high"?"cell-high":v==="mid"?"cell-mid":"cell-low"; }
+function cellLabel(v){ return v==="high"?"Alto":v==="mid"?"Medio":"Bajo"; }
 
-function renderMatrix(activeId){
-  const m = document.getElementById("matrix");
-  m.innerHTML = matrixRows.map((row,i)=>`
-    <div class="matrix-row">
-      <div class="matrix-label">${row.label}</div>
-      <div style="flex:1;display:flex;gap:4px">
-        ${matrixData[i].map((val,j)=>`
-          <div class="matrix-cell ${cellClass(val)}" style="${j===activeId?'outline:2px solid '+frentes[j].color+';outline-offset:-2px':''}">
-            ${cellLabel(val)}
-          </div>
-        `).join("")}
-      </div>
-    </div>
-  `).join("");
-}
-
-function render(id){
+function renderFrente(id) {
   const f = frentes[id];
-  document.getElementById("frente-header").textContent = f.name;
-  document.getElementById("frente-header").style.color = f.color;
-  document.getElementById("frente-sub").textContent = f.sub;
 
-  document.getElementById("dims").innerHTML = f.dims.map(d=>`
+  document.getElementById('frenteTitle').textContent = f.name;
+  document.getElementById('frenteTitle').style.color = f.color;
+  document.getElementById('frenteSub').textContent = f.sub;
+
+  document.getElementById('frenteDims').innerHTML = f.dims.map(d => `
     <div class="dim-row">
       <span class="dim-label">${d.label}</span>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${d.val}%;background:${f.color}"></div>
-      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:0;background:${f.color}" data-w="${d.val}%"></div></div>
       <span class="bar-pct" style="color:${f.color}">${d.val}%</span>
     </div>
-  `).join("");
+  `).join('');
 
-  document.getElementById("stats").innerHTML = f.stats.map(s=>`
+  // Animate frente bars
+  setTimeout(() => {
+    document.querySelectorAll('#frenteDims .bar-fill').forEach(b => { b.style.width = b.dataset.w; });
+  }, 50);
+
+  document.getElementById('frenteStats').innerHTML = f.stats.map(s => `
     <div class="stat-box">
       <div class="stat-n">${s.n}</div>
       <div class="stat-l">${s.l}</div>
     </div>
-  `).join("");
+  `).join('');
 
-  const ins = document.getElementById("insight");
+  const ins = document.getElementById('frenteInsight');
   ins.style.borderLeftColor = f.color;
-  ins.style.background = f.colorLight;
-  document.getElementById("insight-text").textContent = f.insight;
-  document.getElementById("insight-text").style.color = f.color.replace("85","63").replace("1D","08").replace("18","0C").replace("53","3C");
+  ins.style.background = f.color + '0e';
+  document.getElementById('frenteInsightText').textContent = f.insight;
+  document.getElementById('frenteInsightText').style.color = 'var(--text)';
 
-  renderMatrix(id);
+  // Matrix header
+  document.getElementById('matrixHeader').innerHTML = frentes.map((fr,j) => `
+    <div class="matrix-col-label" style="${j===id ? 'color:'+fr.color+';font-weight:700' : ''}">${fr.name.split(' ').slice(0,2).join(' ')}</div>
+  `).join('');
 
-  document.querySelectorAll(".frente-btn").forEach(b=>{
-    b.classList.toggle("active", parseInt(b.dataset.id)===id);
+  // Matrix body
+  document.getElementById('matrixBody').innerHTML = matrixRows.map((row,i) => `
+    <div class="matrix-row-el">
+      <div class="matrix-row-label">${row.label}</div>
+      ${matrixData[i].map((val,j) => `
+        <div class="matrix-cell ${cellClass(val)}" style="${j===id ? 'outline:2px solid '+frentes[j].color+';outline-offset:-2px' : ''}">
+          ${cellLabel(val)}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  // Update buttons
+  document.querySelectorAll('.frente-btn').forEach(b => {
+    const active = parseInt(b.dataset.id) === id;
+    b.classList.toggle('active', active);
+    b.style.borderColor = active ? f.color : '';
+    b.style.color = active ? '#fff' : '';
+    b.style.background = active ? f.color + '22' : '';
   });
 }
 
-document.getElementById("btn-row").addEventListener("click",e=>{
-  const btn = e.target.closest(".frente-btn");
-  if(btn) render(parseInt(btn.dataset.id));
+// Build frente buttons
+const tabsContainer = document.getElementById('frenteTabs');
+frentes.forEach(f => {
+  const btn = document.createElement('button');
+  btn.className = 'frente-btn';
+  btn.dataset.id = f.id;
+  btn.textContent = `0${f.id+1} — ${f.name}`;
+  btn.addEventListener('click', () => renderFrente(f.id));
+  tabsContainer.appendChild(btn);
 });
 
-render(0);
+renderFrente(0);
 </script>
+</body>
+</html>
