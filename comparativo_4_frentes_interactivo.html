@@ -1,0 +1,257 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.frente-btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .15s}
+.frente-btn.active{color:#fff}
+.frente-btn:hover{background:var(--color-background-secondary)}
+.frente-btn[data-id="0"].active{background:#185FA5;border-color:#185FA5;color:#fff}
+.frente-btn[data-id="1"].active{background:#1D9E75;border-color:#1D9E75;color:#fff}
+.frente-btn[data-id="2"].active{background:#854F0B;border-color:#854F0B;color:#fff}
+.frente-btn[data-id="3"].active{background:#534AB7;border-color:#534AB7;color:#fff}
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dim-label{width:150px;font-size:12px;color:var(--color-text-secondary);flex-shrink:0;text-align:right}
+.bar-track{flex:1;height:12px;background:var(--color-background-secondary);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;transition:width .4s ease}
+.bar-pct{width:32px;text-align:right;font-size:12px;font-weight:500;flex-shrink:0}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:1rem}
+.stat-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px}
+.stat-n{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.stat-l{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;line-height:1.3}
+.insight-box{border-left:3px solid #ccc;padding:10px 14px;margin-top:1rem;transition:border-color .3s}
+.insight-box p{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
+.score-row{display:flex;gap:6px;margin-top:1rem;align-items:center;flex-wrap:wrap}
+.score-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;border:2px solid transparent;flex-shrink:0}
+.matrix-row{display:flex;gap:4px;margin-bottom:4px;align-items:center}
+.matrix-label{width:120px;font-size:11px;color:var(--color-text-secondary);text-align:right;flex-shrink:0}
+.matrix-cell{flex:1;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.cell-high{background:#E1F5EE;color:#085041}
+.cell-mid{background:#FAEEDA;color:#633806}
+.cell-low{background:#FCEBEB;color:#791F1F}
+.cell-na{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.frente-header{font-size:18px;font-weight:500;color:var(--color-text-primary);transition:color .3s}
+.frente-sub{font-size:12px;color:var(--color-text-tertiary);margin-top:2px;margin-bottom:1rem}
+</style>
+
+<h2 class="sr-only">Comparativo interactivo de los 4 frentes estratégicos para Daikin en Argentina</h2>
+
+<div style="padding:.5rem 0 1rem">
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem" id="btn-row">
+    <button class="frente-btn active" data-id="0">Mid-market residencial</button>
+    <button class="frente-btn" data-id="1">Sector vitivinícola</button>
+    <button class="frente-btn" data-id="2">Retrofit</button>
+    <button class="frente-btn" data-id="3">HVAC como servicio</button>
+  </div>
+
+  <div id="frente-header" class="frente-header">Mid-market residencial</div>
+  <div id="frente-sub" class="frente-sub">Segmento de mayor volumen del país — clase media con necesidad de climatización</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
+    <div>
+      <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Evaluación por dimensión</div>
+      <div id="dims"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Datos clave del frente</div>
+      <div id="stats" class="stat-grid"></div>
+    </div>
+  </div>
+
+  <div id="insight" class="insight-box">
+    <p id="insight-text"></p>
+  </div>
+
+  <div style="margin-top:1.5rem">
+    <div style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Matriz comparativa — los 4 frentes</div>
+    <div class="matrix-row">
+      <div class="matrix-label"></div>
+      <div style="flex:1;display:flex;gap:4px">
+        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">Mid-market</div>
+        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">Vitivinícola</div>
+        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">Retrofit</div>
+        <div style="flex:1;text-align:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);padding:4px 0">HVACaaS</div>
+      </div>
+    </div>
+    <div id="matrix"></div>
+  </div>
+
+  <div style="margin-top:1rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--color-text-tertiary)">Leyenda:</span>
+    <span style="font-size:11px;background:#E1F5EE;color:#085041;padding:2px 8px;border-radius:4px">Alto</span>
+    <span style="font-size:11px;background:#FAEEDA;color:#633806;padding:2px 8px;border-radius:4px">Medio</span>
+    <span style="font-size:11px;background:#FCEBEB;color:#791F1F;padding:2px 8px;border-radius:4px">Bajo</span>
+  </div>
+
+</div>
+
+<script>
+const frentes = [
+  {
+    id: 0,
+    name: "Mid-market residencial",
+    sub: "Segmento de mayor volumen del país — clase media con necesidad de climatización",
+    color: "#185FA5",
+    colorLight: "#E6F1FB",
+    dims: [
+      {label:"Tamaño de mercado", val:90},
+      {label:"Facilidad de entrada", val:55},
+      {label:"Margen potencial", val:45},
+      {label:"Sensibilidad al precio", val:20},
+      {label:"Diferenciación Daikin", val:40},
+      {label:"Urgencia del cliente", val:70},
+    ],
+    stats: [
+      {n:"~46M", l:"Población potencial"},
+      {n:"$1.8–2.5B", l:"TAM climatización AR"},
+      {n:"Alta", l:"Competencia local/china"},
+    ],
+    insight: "Mayor volumen absoluto del país. Pero Daikin compite arriba en precio — pierde volumen frente a marcas chinas y locales. Requiere líneas value-engineered para entrar. Margen bajo, volumen alto.",
+    matrix: ["high","mid","mid","low"]
+  },
+  {
+    id: 1,
+    name: "Sector vitivinícola",
+    sub: "Nicho de alta precisión técnica — 874 bodegas activas en Argentina",
+    color: "#1D9E75",
+    colorLight: "#E1F5EE",
+    dims: [
+      {label:"Tamaño de mercado", val:40},
+      {label:"Facilidad de entrada", val:70},
+      {label:"Margen potencial", val:90},
+      {label:"Sensibilidad al precio", val:80},
+      {label:"Diferenciación Daikin", val:95},
+      {label:"Urgencia del cliente", val:90},
+    ],
+    stats: [
+      {n:"874", l:"Bodegas activas (INV 2024)"},
+      {n:"$713M", l:"Exportaciones vino 2024"},
+      {n:"Zuccardi", l:"Caso real Daikin en AR"},
+    ],
+    insight: "Nicho pequeño en volumen pero de alto valor. HVAC no es opcional — es requisito de calidad. Daikin tiene caso probado en Mendoza. Menos sensible al precio. Diferenciación máxima frente a competencia.",
+    matrix: ["low","high","mid","mid"]
+  },
+  {
+    id: 2,
+    name: "Retrofit",
+    sub: "Reemplazo de sistemas obsoletos — parque existente enorme y envejecido",
+    color: "#854F0B",
+    colorLight: "#FAEEDA",
+    dims: [
+      {label:"Tamaño de mercado", val:75},
+      {label:"Facilidad de entrada", val:60},
+      {label:"Margen potencial", val:65},
+      {label:"Sensibilidad al precio", val:45},
+      {label:"Diferenciación Daikin", val:70},
+      {label:"Urgencia del cliente", val:80},
+    ],
+    stats: [
+      {n:"Alta", l:"Penetración equipos viejos"},
+      {n:"+159%", l:"Alza tarifa eléctrica feb 2024"},
+      {n:"Alta", l:"Motivación por ahorro"},
+    ],
+    insight: "Mercado ya existente — no se necesita educar. La suba de tarifas eléctricas crea urgencia real para reemplazar equipos ineficientes. El principal problema es el costo inicial del reemplazo.",
+    matrix: ["mid","mid","high","mid"]
+  },
+  {
+    id: 3,
+    name: "HVAC como servicio",
+    sub: "Modelo de suscripción mensual — elimina la barrera del costo inicial",
+    color: "#534AB7",
+    colorLight: "#EEEDFE",
+    dims: [
+      {label:"Tamaño de mercado", val:70},
+      {label:"Facilidad de entrada", val:40},
+      {label:"Margen potencial", val:75},
+      {label:"Sensibilidad al precio", val:85},
+      {label:"Diferenciación Daikin", val:85},
+      {label:"Urgencia del cliente", val:65},
+    ],
+    stats: [
+      {n:"Alta", l:"Baja liquidez en Argentina"},
+      {n:"Global", l:"Tendencia 'everything-as-a-service'"},
+      {n:"Alto", l:"Riesgo de implementación"},
+    ],
+    insight: "Modelo innovador que ataca la barrera principal: el costo inicial. Alta diferenciación vs. competencia. Pero requiere cambio de modelo de negocio en Daikin AR y mayor complejidad operativa.",
+    matrix: ["mid","mid","mid","high"]
+  }
+];
+
+const matrixRows = [
+  {label:"Tamaño mercado"},
+  {label:"Margen potencial"},
+  {label:"Diferenciación"},
+  {label:"Urgencia cliente"},
+  {label:"Facilidad entrada"},
+];
+
+const matrixData = [
+  ["high","low","mid","mid"],
+  ["low","high","mid","mid"],
+  ["low","high","mid","high"],
+  ["mid","high","high","mid"],
+  ["mid","high","mid","low"],
+];
+
+function cellClass(v){return v==="high"?"cell-high":v==="mid"?"cell-mid":"cell-low";}
+function cellLabel(v){return v==="high"?"Alto":v==="mid"?"Medio":"Bajo";}
+
+function renderMatrix(activeId){
+  const m = document.getElementById("matrix");
+  m.innerHTML = matrixRows.map((row,i)=>`
+    <div class="matrix-row">
+      <div class="matrix-label">${row.label}</div>
+      <div style="flex:1;display:flex;gap:4px">
+        ${matrixData[i].map((val,j)=>`
+          <div class="matrix-cell ${cellClass(val)}" style="${j===activeId?'outline:2px solid '+frentes[j].color+';outline-offset:-2px':''}">
+            ${cellLabel(val)}
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function render(id){
+  const f = frentes[id];
+  document.getElementById("frente-header").textContent = f.name;
+  document.getElementById("frente-header").style.color = f.color;
+  document.getElementById("frente-sub").textContent = f.sub;
+
+  document.getElementById("dims").innerHTML = f.dims.map(d=>`
+    <div class="dim-row">
+      <span class="dim-label">${d.label}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${d.val}%;background:${f.color}"></div>
+      </div>
+      <span class="bar-pct" style="color:${f.color}">${d.val}%</span>
+    </div>
+  `).join("");
+
+  document.getElementById("stats").innerHTML = f.stats.map(s=>`
+    <div class="stat-box">
+      <div class="stat-n">${s.n}</div>
+      <div class="stat-l">${s.l}</div>
+    </div>
+  `).join("");
+
+  const ins = document.getElementById("insight");
+  ins.style.borderLeftColor = f.color;
+  ins.style.background = f.colorLight;
+  document.getElementById("insight-text").textContent = f.insight;
+  document.getElementById("insight-text").style.color = f.color.replace("85","63").replace("1D","08").replace("18","0C").replace("53","3C");
+
+  renderMatrix(id);
+
+  document.querySelectorAll(".frente-btn").forEach(b=>{
+    b.classList.toggle("active", parseInt(b.dataset.id)===id);
+  });
+}
+
+document.getElementById("btn-row").addEventListener("click",e=>{
+  const btn = e.target.closest(".frente-btn");
+  if(btn) render(parseInt(btn.dataset.id));
+});
+
+render(0);
+</script>
